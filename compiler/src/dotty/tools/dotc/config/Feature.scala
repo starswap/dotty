@@ -43,6 +43,7 @@ object Feature:
   val relaxedLambdaSyntax = experimental("relaxedLambdaSyntax")
   val safe = experimental("safe")
   val dedentedStringLiterals = experimental("dedentedStringLiterals")
+  val inlineTraits = experimental("inlineTraits")
 
   val nonViralExperimentalFeatures: Set[TermName] =
     Set(captureChecking, separationChecking, safe)
@@ -80,6 +81,7 @@ object Feature:
     (relaxedLambdaSyntax, "Enable experimental relaxed lambda syntax"),
     (safe, "Require safe mode"),
     (dedentedStringLiterals, "Enable experimental dedented string literals"),
+    (inlineTraits, "Allow inline traits")
   )
 
   /** Features that are now standard; the language import / -language choice is
@@ -179,7 +181,11 @@ object Feature:
 
   def quotedPatternsWithPolymorphicFunctionsEnabled(using Context) =
     enabled(quotedPatternsWithPolymorphicFunctions)
-
+  
+  def inlineTraitsEnabled(using Context) = 
+    enabledBySetting(inlineTraits)
+    || ctx.compilationUnit.knowsInlineTraits
+  
   /** Is pureFunctions enabled for this compilation unit? */
   def pureFunsEnabled(using Context) =
     enabledBySetting(pureFunctions)
@@ -206,6 +212,10 @@ object Feature:
   def safeEnabled(using Context) =
     enabledBySetting(safe)
     || ctx.originalCompilationUnit.safeMode
+
+  def inlineTraitsEnabledSomewhere(using Context) =
+    enabledBySetting(inlineTraits)
+    || ctx.run != null && ctx.run.nn.inlineTraitsImportEncountered
 
   /** Is pureFunctions enabled for any of the currently compiled compilation units? */
   def pureFunsEnabledSomewhere(using Context) =
@@ -293,7 +303,7 @@ object Feature:
    *  snippet compiler so they take effect across inputs (i16250).
    */
   val globalLanguageImports: Set[TermName] =
-    Set(pureFunctions, captureChecking, separationChecking, safe)
+    Set(pureFunctions, captureChecking, separationChecking, safe, inlineTraits)
 
   /** Handle a global language import `import language.<prefix>.<imported>`.
    *  Sets the compilation unit's and current run's fields accordingly.
@@ -318,6 +328,10 @@ object Feature:
         ctx.compilationUnit.needsCaptureChecking = true
         ctx.compilationUnit.safeMode = true
         if ctx.run != null then ctx.run.nn.ccEnabledSomewhere = true
+        true
+      case `inlineTraits` =>
+        ctx.compilationUnit.knowsInlineTraits = true 
+        if ctx.run != null then ctx.run.nn.inlineTraitsImportEncountered = true
         true
       case _ =>
         false
