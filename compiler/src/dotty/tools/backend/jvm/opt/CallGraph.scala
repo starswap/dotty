@@ -176,14 +176,10 @@ class CallGraph(frontendAccess: PostProcessorFrontendAccess,
             } yield {
               val declarationClassBType = bTypesFromClassfile.classBTypeFromClassNode(declarationClassNode, declarationModuleNode)
               val info = analyzeCallsite(method, declarationClassBType, call, paramTps, calleeSourceFilePath, definingClass)
-              val preciseClassBType = call.getOpcode match
-                case Opcodes.INVOKEVIRTUAL if preciseOwner != declarationClass => byteCodeRepository.classNode(preciseOwner).map(bTypesFromClassfile.classBTypeFromClassNode).toOption
-                case _ => None
               import info._
               Callee(
                 callee = method,
                 calleeDeclarationClass = declarationClassBType,
-                calleePreciseInstanceClass = preciseClassBType,
                 isStaticallyResolved = isStaticallyResolved,
                 sourceFilePath = sourceFilePath,
                 annotatedInline = annotatedInline,
@@ -457,7 +453,7 @@ case object StaticallyKnownArray extends ArgInfo
  * @param calleeInfoWarning      An inliner warning if some information was not available while
  *                               gathering the information about this callee.
  */
-final case class Callee(callee: MethodNode, calleeDeclarationClass: ClassBType, calleePreciseInstanceClass: Option[ClassBType],
+final case class Callee(callee: MethodNode, calleeDeclarationClass: ClassBType,
                         isStaticallyResolved: Boolean, sourceFilePath: Option[String],
                         annotatedInline: Boolean, annotatedNoInline: Boolean,
                         samParamTypes: IntMap[ClassBType],
