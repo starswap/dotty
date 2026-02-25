@@ -149,7 +149,7 @@ object PostProcessorFrontendAccess {
       override def optAssumeModulesNonNull: Boolean = s.optAssumeModulesNonNull
       override def optAllowSkipClassLoading: Boolean = s.optAllowSkipClassLoading
       override def optInlinerEnabled: Boolean = true // s.optInline.value.nonEmpty
-      override def optInlineFrom: List[String] = List("**")// s.optInline.value
+      override def optInlineFrom: List[String] = List("**", "!java/**")// s.optInline.value
       override def optInlineHeuristics: String = s.YoptInlineHeuristics.value
       override def optWarningNoInlineMixed: Boolean = s.optWarningNoInlineMixed
       override def optWarningNoInlineMissingBytecode: Boolean = s.optWarningNoInlineMissingBytecode
