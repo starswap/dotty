@@ -3597,8 +3597,8 @@ object Types extends TypeUtils {
       def build(count: Int, it: Iterator[Type]): Type =
         if count == 1 then it.next()
         else
-          val leftSize = count / 2
-          val rightSize = count - leftSize
+          val rightSize = count / 2
+          val leftSize = count - rightSize
           apply(build(leftSize, it), build(rightSize, it))
 
       build(size(tp1) + size(tp2), iterator(tp1) ++ iterator(tp2))
@@ -3748,8 +3748,8 @@ object Types extends TypeUtils {
       def build(count: Int, it: Iterator[Type]): Type =
         if count == 1 then it.next()
         else
-          val leftSize = count / 2
-          val rightSize = count - leftSize
+          val rightSize = count / 2
+          val leftSize = count - rightSize
           apply(build(leftSize, it), build(rightSize, it), soft)
 
       build(size(tp1) + size(tp2), iterator(tp1) ++ iterator(tp2))
