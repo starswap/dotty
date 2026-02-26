@@ -29,6 +29,7 @@ object Feature:
 
   val dependent = experimental("dependent")
   val erasedDefinitions = experimental("erasedDefinitions")
+  val specializedTraits = experimental("specializedTraits")
   val strictEqualityPatternMatching = experimental("strictEqualityPatternMatching")
   val symbolLiterals = deprecated("symbolLiterals")
   val saferExceptions = experimental("saferExceptions")
@@ -70,6 +71,8 @@ object Feature:
     (scala2macros, "Allow Scala 2 macros"),
     (dependent, "Allow dependent method types"),
     (erasedDefinitions, "Allow erased definitions"),
+    (specializedTraits, "Allow specialized traits"),
+    (strictEqualityPatternMatching, "relaxed CanEqual checks for ADT pattern matching"),
     (symbolLiterals, "Allow symbol literals"),
     (saferExceptions, "Enable safer exceptions"),
     (pureFunctions, "Enable pure functions for capture checking"),
@@ -184,6 +187,7 @@ object Feature:
   
   def inlineTraitsEnabled(using Context) = 
     enabledBySetting(inlineTraits)
+    || enabledBySetting(specializedTraits)
     || ctx.compilationUnit.knowsInlineTraits
   
   /** Is pureFunctions enabled for this compilation unit? */
@@ -215,6 +219,7 @@ object Feature:
 
   def inlineTraitsEnabledSomewhere(using Context) =
     enabledBySetting(inlineTraits)
+    || enabledBySetting(specializedTraits)
     || ctx.run != null && ctx.run.nn.inlineTraitsImportEncountered
 
   /** Is pureFunctions enabled for any of the currently compiled compilation units? */
